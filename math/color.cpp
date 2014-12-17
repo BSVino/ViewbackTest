@@ -96,8 +96,8 @@ void Color::SetAlpha(float f)
 void Color::SetHSL(float flHue, float flSaturation, float flLightness)
 {
 	float flHue6 = flHue/60;
-	float flChroma = (1 - fabs(2 * flLightness - 1)) * flSaturation;
-	float flX = flChroma * (1 - fabs(fmod(flHue6, 2) - 1));
+	float flChroma = (1 - (float)fabs(2 * flLightness - 1)) * flSaturation;
+	float flX = flChroma * (1 - (float)fabs((float)fmod(flHue6, 2) - 1));
 
 	float flR1, flG1, flB1;
 	if (flHue6 < 1)
@@ -157,7 +157,7 @@ void Color::GetHSL(float& flHue, float& flSaturation, float& flLightness)
 	if (flChroma == 0)
 		flHue = 0;
 	else if (r > g && r > b)
-		flHue = fmod((g - b)/flChroma, 6) * 60;
+		flHue = (float)fmod((g - b) / flChroma, 6) * 60;
 	else if (g > r && g > b)
 		flHue = ((blue - r)/flChroma + 2) * 60;
 	else if (b > r && b > g)
