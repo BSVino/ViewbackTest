@@ -25,6 +25,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <viewback_util.h>
 
 #include <common_platform.h>
+#include <strutils.h>
 
 #include <mtrand.h>
 #include <math/collision.h>

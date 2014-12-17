@@ -54,6 +54,11 @@ public:
 	float  Dot(const Vector& v) const;
 	Vector Cross(const Vector& v) const;
 
+	bool IsValid() const
+	{
+		return !isnan(x) && isfinite(x) && !isnan(y) && isfinite(y) && !isnan(z) && isfinite(z);
+	}
+
 public:
 	union {
 		struct {

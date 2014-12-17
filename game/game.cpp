@@ -69,7 +69,7 @@ void CGame::Load()
 	m_iCrateTexture = GetRenderer()->LoadTextureIntoGL("crate.png");
 
 	vb_util_add_channel("Player speed", VB_DATATYPE_FLOAT, NULL);
-	//vb_util_set_range_s("Player speed", 0, 400);
+	vb_util_set_range_s("Player speed", 0, 400);
 
 	vb_util_add_control_slider_float("Player speed", 0, 20, 0, vb_player_speed);
 	vb_util_set_control_slider_float_value("Player speed", CVar::GetCVarFloat("player_speed"));
@@ -195,6 +195,7 @@ void CGame::Update(float dt)
 	// Order matters! http://youtu.be/7pe1xYzFCvA
 	m_hPlayer->SetGlobalTransform(mPlayerTranslation * mPlayerRotation * mPlayerScaling);
 
+	vb_data_send_float_s("Player speed", m_hPlayer->m_vecVelocity.Length2D());
 	//vb_data_set_control_slider_float_value("Player speed", player_speed.GetFloat());
 
 	float flMonsterSpeed = 0.5f;
@@ -208,6 +209,9 @@ void CGame::Update(float dt)
 			continue;
 
 		// Update position and movement. http://www.youtube.com/watch?v=c4b9lCfSDQM
+		if ((m_hPlayer->GetGlobalOrigin() - pCharacter->GetGlobalOrigin()).Length() < 1)
+			continue;
+
 		pCharacter->m_vecVelocity = (m_hPlayer->GetGlobalOrigin() - pCharacter->GetGlobalOrigin()).Normalized() * flMonsterSpeed;
 
 		pCharacter->SetTranslation(pCharacter->GetGlobalOrigin() + pCharacter->m_vecVelocity * dt);
