@@ -51,8 +51,6 @@ CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 	SetSize(iWidth, iHeight);
 
 	m_bDrawBackground = true;
-
-	InitBunny();
 }
 
 void CRenderer::Initialize()

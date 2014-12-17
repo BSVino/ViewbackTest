@@ -93,9 +93,6 @@
     <ClCompile Include="math\quaternion.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>
-    <ClCompile Include="renderer\stanfordbunny.cpp">
-      <Filter>Source Files\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="math\graph.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>

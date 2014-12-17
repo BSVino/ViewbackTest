@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFGD", "MFGD.vcxproj", "{74F75FB6-111F-46F3-A0A5-013FBDB9C325}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Roguelike", "Roguelike.vcxproj", "{74F75FB6-111F-46F3-A0A5-013FBDB9C325}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

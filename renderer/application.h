@@ -38,8 +38,8 @@ public:
 
 	void						OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, bool bResizeable);
 
-	virtual std::string         WindowTitle() { return "Math for Game Developers"; }
-	virtual std::string         AppDirectory() { return "MFGD"; }
+	virtual std::string         WindowTitle() { return "Viewback Test"; }
+	virtual std::string         AppDirectory() { return "VBTest"; }
 
 	void						SwapBuffers();
 	float                       GetTime();
