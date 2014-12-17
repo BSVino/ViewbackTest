@@ -89,6 +89,7 @@
     <ClCompile Include="math\quaternion.cpp" />
     <ClCompile Include="math\vector.cpp" />
     <ClCompile Include="renderer\application.cpp" />
+    <ClCompile Include="renderer\cvar.cpp" />
     <ClCompile Include="renderer\gl3w.c" />
     <ClCompile Include="renderer\image_read.cpp" />
     <ClCompile Include="renderer\renderer.cpp" />

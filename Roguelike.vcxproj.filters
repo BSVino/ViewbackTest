@@ -111,6 +111,9 @@
     <ClCompile Include="game\game2.cpp">
       <Filter>Source Files\game</Filter>
     </ClCompile>
+    <ClCompile Include="renderer\cvar.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\libglfw.lib">

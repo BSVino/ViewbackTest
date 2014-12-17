@@ -213,20 +213,20 @@ void CData::SetValue(bool bValue)
 
 void CData::SetValue(int iValue)
 {
-	m_sValue = sprintf(string("%d"), iValue);
+	m_sValue = tsprintf(string("%d"), iValue);
 }
 
 void CData::SetValue(size_t iValue)
 {
-	m_sValue = sprintf(string("%u"), iValue);
+	m_sValue = tsprintf(string("%u"), iValue);
 }
 
 void CData::SetValue(float flValue)
 {
-	m_sValue = sprintf(string("%f"), flValue);
+	m_sValue = tsprintf(string("%f"), flValue);
 }
 
 void CData::SetValue(Vector2D vecValue)
 {
-	m_sValue = sprintf(string("%f, %f"), vecValue.x, vecValue.y);
+	m_sValue = tsprintf(string("%f, %f"), vecValue.x, vecValue.y);
 }

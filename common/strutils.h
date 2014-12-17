@@ -184,7 +184,7 @@ inline std::string convert_from_wstring(const std::wstring& s)
 	return t;
 }
 
-inline std::string sprintf(std::string s, ...)
+inline std::string tsprintf(std::string s, ...)
 {
 	va_list arguments;
 	va_start(arguments, s);
@@ -304,7 +304,7 @@ inline C* strdup(const C* s)
 
 inline std::string pretty_float(float f, int iMaxLength=8)
 {
-	std::string s = sprintf("%." + sprintf("%d", iMaxLength) + "f", f);
+	std::string s = tsprintf("%." + tsprintf("%d", iMaxLength) + "f", f);
 
 	size_t i = s.length();
 	while (s[i-1] == '0')

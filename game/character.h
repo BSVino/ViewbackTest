@@ -75,7 +75,6 @@ public:
 	Vector    m_vecMovementGoal;
 	Vector    m_vecVelocity;
 	Vector    m_vecGravity;
-	float     m_flSpeed;
 	AABB      m_aabbSize;
 	Color     m_clrRender;
 	size_t    m_iTexture;

@@ -403,7 +403,7 @@ bool CShader::Compile()
 	m_iTangentAttribute = glGetAttribLocation(m_iProgram, "vecTangent");
 	m_iBitangentAttribute = glGetAttribLocation(m_iProgram, "vecBitangent");
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
-		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, sprintf("vecTexCoord%d", i).c_str());
+		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, tsprintf("vecTexCoord%d", i).c_str());
 	m_iColorAttribute = glGetAttribLocation(m_iProgram, "vecVertexColor");
 
 	glBindFragDataLocation(m_iProgram, 0, "vecOutputColor");

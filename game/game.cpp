@@ -33,6 +33,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <math/quaternion.h>
 #include <math/physics.h>
 
+#include <renderer/cvar.h>
 #include <renderer/renderer.h>
 #include <renderer/renderingcontext.h>
 
@@ -52,37 +53,55 @@ CGame::CGame(int argc, char** argv)
 	mtsrand(0);
 }
 
+void vb_command(const char* text)
+{
+	CCommand::Run(text);
+}
+
+void vb_player_speed(float value)
+{
+	CVar::SetCVar("player_speed", value);
+}
+
 void CGame::Load()
 {
 	m_iMonsterTexture = GetRenderer()->LoadTextureIntoGL("monster.png");
 	m_iCrateTexture = GetRenderer()->LoadTextureIntoGL("crate.png");
 
 	vb_util_add_channel("Player speed", VB_DATATYPE_FLOAT, NULL);
-	vb_util_set_range_s("Player speed", 0, 400);
+	//vb_util_set_range_s("Player speed", 0, 400);
+
+	vb_util_add_control_slider_float("Player speed", 0, 20, 0, vb_player_speed);
+	vb_util_set_control_slider_float_value("Player speed", CVar::GetCVarFloat("player_speed"));
+
+	vb_util_set_command_callback(vb_command);
+
 	vb_util_server_create("Roguelike Test");
 }
+
+CVar player_speed("player_speed", "15");
 
 // This method gets called when the user presses a key
 bool CGame::KeyPress(int c)
 {
 	if (c == 'W')
 	{
-		m_hPlayer->m_vecMovementGoal.x = m_hPlayer->m_flSpeed;
+		m_hPlayer->m_vecMovementGoal.x = player_speed.GetFloat();
 		return true;
 	}
 	else if (c == 'A')
 	{
-		m_hPlayer->m_vecMovementGoal.z = m_hPlayer->m_flSpeed;
+		m_hPlayer->m_vecMovementGoal.z = player_speed.GetFloat();
 		return true;
 	}
 	else if (c == 'S')
 	{
-		m_hPlayer->m_vecMovementGoal.x = -m_hPlayer->m_flSpeed;
+		m_hPlayer->m_vecMovementGoal.x = -player_speed.GetFloat();
 		return true;
 	}
 	else if (c == 'D')
 	{
-		m_hPlayer->m_vecMovementGoal.z = -m_hPlayer->m_flSpeed;
+		m_hPlayer->m_vecMovementGoal.z = -player_speed.GetFloat();
 		return true;
 	}
 	else if (c == ' ')
@@ -176,7 +195,7 @@ void CGame::Update(float dt)
 	// Order matters! http://youtu.be/7pe1xYzFCvA
 	m_hPlayer->SetGlobalTransform(mPlayerTranslation * mPlayerRotation * mPlayerScaling);
 
-	vb_data_send_float_s("Player speed", m_hPlayer->m_vecVelocity.Length2D());
+	//vb_data_set_control_slider_float_value("Player speed", player_speed.GetFloat());
 
 	float flMonsterSpeed = 0.5f;
 	for (size_t i = 0; i < MAX_CHARACTERS; i++)
@@ -206,7 +225,6 @@ void CGame::GameLoop()
 	m_hPlayer->m_vecMovementGoal = Vector(0, 0, 0);
 	m_hPlayer->m_vecVelocity = Vector(0, 0, 0);
 	m_hPlayer->m_vecGravity = Vector(0, -10, 0);
-	m_hPlayer->m_flSpeed = 15;
 	m_hPlayer->m_clrRender = Color(0.8f, 0.4f, 0.2f, 1.0f);
 	m_hPlayer->m_bHitByTraces = false;
 	m_hPlayer->m_aabbSize = AABB(-Vector(0.5f, 0, 0.5f), Vector(0.5f, 2, 0.5f));
