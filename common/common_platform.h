@@ -40,6 +40,8 @@ void DebugPrint(const char* pszText);
 void Exec(const std::string& sLine);
 int TranslateKeyToQwerty(int iKey);
 int TranslateKeyFromQwerty(int iKey);
+void SetLowPeriodScheduler();
+void ClearLowPeriodScheduler();
 
 #ifdef _WIN32
 #define DIR_SEP "\\"

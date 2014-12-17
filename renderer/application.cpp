@@ -46,6 +46,8 @@ CApplication::CApplication(int argc, char** argv)
 
 	SetMouseCursorEnabled(true);
 	m_flLastMousePress = -1;
+
+	SetLowPeriodScheduler();
 }
 
 void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, bool bResizeable)
@@ -127,6 +129,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 
 CApplication::~CApplication()
 {
+	ClearLowPeriodScheduler();
 	glfwTerminate();
 }
 

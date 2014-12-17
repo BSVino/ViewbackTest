@@ -21,6 +21,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include <algorithm>
 
+#include <common_platform.h>
+
 #include <mtrand.h>
 #include <math/collision.h>
 #include <math/frustum.h>
@@ -687,8 +689,22 @@ void CGame::GameLoop()
 	float flPreviousTime = 0;
 	float flCurrentTime = Application()->GetTime();
 
+	float frame_end_time = 0;
+	float frame_start_time = 0;
+
 	while (true)
 	{
+		frame_end_time = GetTime();
+
+		{
+			double next_frame_time = frame_start_time + (1.0f / 30);
+			double time_to_sleep_seconds = next_frame_time - frame_end_time;
+			if (time_to_sleep_seconds > 0.001)
+				SleepMS((size_t)(time_to_sleep_seconds * 1000));
+		}
+
+		frame_start_time = GetTime();
+
 		// flCurrentTime will be lying around from last frame. It's now the previous time.
 		flPreviousTime = flCurrentTime;
 		flCurrentTime = Application()->GetTime();

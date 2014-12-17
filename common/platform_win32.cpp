@@ -341,3 +341,13 @@ int TranslateKeyFromQwerty(int iKey)
 	UINT i = MapVirtualKeyEx(GetVKForChar(iKey), MAPVK_VK_TO_VSC, g_iEnglish);
 	return (int)GetCharForVK(MapVirtualKeyEx(i, MAPVK_VSC_TO_VK, iCurrent));
 }
+
+void SetLowPeriodScheduler()
+{
+	timeBeginPeriod(1);
+}
+
+void ClearLowPeriodScheduler()
+{
+	timeEndPeriod(1);
+}
