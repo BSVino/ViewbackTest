@@ -486,9 +486,9 @@ void CApplication::GetMousePosition(int& x, int& y)
 void CApplication::SetMouseCursorEnabled(bool bEnabled)
 {
 	if (bEnabled)
-		glfwEnable(GLFW_MOUSE_CURSOR);
-	else
 		glfwDisable(GLFW_MOUSE_CURSOR);
+	else
+		glfwEnable(GLFW_MOUSE_CURSOR);
 
 	m_bMouseEnabled = bEnabled;
 }

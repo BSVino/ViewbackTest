@@ -98,6 +98,11 @@ bool CGame::KeyPress(int c)
 		m_hPlayer->m_vecVelocity.y = 7;
 		return true;
 	}
+	else if (c == 256)
+	{
+		SetMouseCursorEnabled(!m_bMouseEnabled);
+		return true;
+	}
 	else
 		return CApplication::KeyPress(c);
 }
@@ -128,6 +133,9 @@ void CGame::KeyRelease(int c)
 // This method is called every time the player moves the mouse
 void CGame::MouseMotion(int x, int y)
 {
+	if (!m_bMouseEnabled)
+		return;
+
 	if (!HasFocus())
 	{
 		// Swallow the input while the window isn't in focus so the player

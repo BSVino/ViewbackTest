@@ -7,3 +7,4 @@
 mfgd
 *.o
 .depend
+/enc_temp_folder
