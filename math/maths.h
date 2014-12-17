@@ -20,7 +20,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <cmath>
 
 // https://www.youtube.com/watch?v=qJq7I2DLGzI
-float Approach(float flGoal, float flCurrent, float dt)
+inline float Approach(float flGoal, float flCurrent, float dt)
 {
 	float flDifference = flGoal - flCurrent;
 
@@ -33,7 +33,7 @@ float Approach(float flGoal, float flCurrent, float dt)
 }
 
 // http://youtu.be/K3TLNQOxU0o
-float Remap(float x, float t1, float t2, float s1, float s2)
+inline float Remap(float x, float t1, float t2, float s1, float s2)
 {
 	// "Yellow" is a "normalized" value between 0 and 1
 	float yellow = (x - t1)/(t2 - t1);
@@ -44,7 +44,7 @@ float Remap(float x, float t1, float t2, float s1, float s2)
 	return green;
 }
 
-float RemapClamp(float x, float t1, float t2, float s1, float s2)
+inline float RemapClamp(float x, float t1, float t2, float s1, float s2)
 {
 	if (x < t1)
 		return s1;
