@@ -42,6 +42,7 @@ int TranslateKeyToQwerty(int iKey);
 int TranslateKeyFromQwerty(int iKey);
 void SetLowPeriodScheduler();
 void ClearLowPeriodScheduler();
+void InitializeWin32SocketsBullshit();
 
 #ifdef _WIN32
 #define DIR_SEP "\\"

@@ -351,3 +351,13 @@ void ClearLowPeriodScheduler()
 {
 	timeEndPeriod(1);
 }
+
+void InitializeWin32SocketsBullshit()
+{
+#ifdef _WIN32
+	WSADATA wsadata;
+	if (WSAStartup(MAKEWORD(2, 0), &wsadata) != 0)
+		return;
+#endif
+}
+

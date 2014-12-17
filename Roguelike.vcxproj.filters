@@ -31,6 +31,9 @@
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{82401f27-cafa-4e62-9911-1483e2fbd0d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\viewback">
+      <UniqueIdentifier>{09887fc1-e6eb-476d-9bfd-0f9c52733c5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game\main.cpp">
@@ -98,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="common\mtrand.cpp">
       <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Viewback\server\viewback.c">
+      <Filter>Source Files\viewback</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Viewback\server\viewback_util.cpp">
+      <Filter>Source Files\viewback</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

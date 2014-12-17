@@ -21,6 +21,9 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include <algorithm>
 
+#include <viewback.h>
+#include <viewback_util.h>
+
 #include <common_platform.h>
 
 #include <mtrand.h>
@@ -44,6 +47,8 @@ CGame::CGame(int argc, char** argv)
 
 	memset(m_apEntityList, 0, sizeof(m_apEntityList));
 
+	InitializeWin32SocketsBullshit();
+
 	mtsrand(0);
 }
 
@@ -51,6 +56,10 @@ void CGame::Load()
 {
 	m_iMonsterTexture = GetRenderer()->LoadTextureIntoGL("monster.png");
 	m_iCrateTexture = GetRenderer()->LoadTextureIntoGL("crate.png");
+
+	vb_util_add_channel("Player speed", VB_DATATYPE_FLOAT, NULL);
+	vb_util_set_range_s("Player speed", 0, 400);
+	vb_util_server_create("Roguelike Test");
 }
 
 void CGame::MakePuff(const Point& p)
@@ -302,6 +311,8 @@ void CGame::Update(float dt)
 	// Produce a transformation matrix from our three TRS matrices.
 	// Order matters! http://youtu.be/7pe1xYzFCvA
 	m_hPlayer->SetGlobalTransform(mPlayerTranslation * mPlayerRotation * mPlayerScaling);
+
+	vb_data_send_float_s("Player speed", m_hPlayer->m_vecVelocity.Length2D());
 
 	float flMonsterSpeed = 0.5f;
 	for (size_t i = 0; i < MAX_CHARACTERS; i++)
@@ -716,6 +727,8 @@ void CGame::GameLoop()
 		// flCurrentTime will be lying around from last frame. It's now the previous time.
 		flPreviousTime = flCurrentTime;
 		flCurrentTime = Application()->GetTime();
+
+		vb_server_update((vb_uint64)(flCurrentTime * 1000));
 
 		float dt = flCurrentTime - flPreviousTime;
 

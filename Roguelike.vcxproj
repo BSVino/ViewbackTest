@@ -44,7 +44,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;.\common;.\include;.\math</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\common;.\include;.\math;../Viewback/server</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_USE_MATH_DEFINES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -69,6 +69,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Viewback\server\viewback.c" />
+    <ClCompile Include="..\Viewback\server\viewback_util.cpp" />
     <ClCompile Include="common\mtrand.cpp" />
     <ClCompile Include="common\platform_win32.cpp" />
     <ClCompile Include="datamanager\data.cpp" />

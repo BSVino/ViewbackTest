@@ -38,6 +38,7 @@ public:
 public:
 	float Length() const;
 	float LengthSqr() const;
+	float Length2D() const;
 
 	Vector operator-() const;
 

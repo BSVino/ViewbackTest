@@ -69,6 +69,11 @@ float Vector::LengthSqr() const
 	return (x*x + y*y + z*z);
 }
 
+float Vector::Length2D() const
+{
+	return (x*x + z*z);
+}
+
 float Vector::Dot(const Vector& v) const
 {
 	return x*v.x + y*v.y + z*v.z;
