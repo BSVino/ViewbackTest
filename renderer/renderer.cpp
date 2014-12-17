@@ -26,7 +26,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include <files.h>
 
-#include <renderer/image_read.h>
+#include <renderer/stb_image.h>
 #include <renderer/shaders.h>
 
 #include "application.h"
