@@ -41,26 +41,14 @@ CGame::CGame(int argc, char** argv)
 	m_iLastMouseX = m_iLastMouseY = -1;
 
 	memset(m_apEntityList, 0, sizeof(m_apEntityList));
+
+	mtsrand(0);
 }
 
 void CGame::Load()
 {
 	m_iMonsterTexture = GetRenderer()->LoadTextureIntoGL("monster.png");
 	m_iCrateTexture = GetRenderer()->LoadTextureIntoGL("crate.png");
-	m_iNormalTexture = GetRenderer()->LoadTextureIntoGL("normal.png");
-
-	GraphReset();
-
-	m_projectile_initial_time = Game()->GetTime();
-	m_projectile_initial_position = Vector(2, 1, 2);
-	m_projectile_initial_velocity = Vector(-1, 3, -1) * 5;
-	m_projectile_gravity = Vector(0, -5, 0);
-	m_projectile_break_time = Game()->GetTime() + PredictProjectileMaximumHeightTime(m_projectile_initial_velocity, m_projectile_gravity);
-	m_projectile_number = 1;
-
-	// Fire the first one
-	m_projectile_position[0] = m_projectile_initial_position;
-	m_projectile_velocity[0] = m_projectile_initial_velocity;
 }
 
 void CGame::MakePuff(const Point& p)
@@ -106,21 +94,6 @@ bool CGame::KeyPress(int c)
 	else if (c == ' ')
 	{
 		m_hPlayer->m_vecVelocity.y = 7;
-		return true;
-	}
-	else if (c == 'G')
-	{
-		GraphStep();
-		return true;
-	}
-	else if (c == 'H')
-	{
-		GraphComplete();
-		return true;
-	}
-	else if (c == 'R')
-	{
-		GraphReset();
 		return true;
 	}
 	else
@@ -320,14 +293,6 @@ void CGame::Update(float dt)
 	// Order matters! http://youtu.be/7pe1xYzFCvA
 	m_hPlayer->SetGlobalTransform(mPlayerTranslation * mPlayerRotation * mPlayerScaling);
 
-	Vector x1 = m_hPlayer->GetGlobalOrigin();
-	float flPlayerDistanceTraveled = m_hPlayer->m_flDistanceTraveled;
-
-	// Add the distance traveled this frame.
-	flPlayerDistanceTraveled += (x1 - x0).Length();
-
-	m_hPlayer->m_flDistanceTraveled = flPlayerDistanceTraveled;
-
 	float flMonsterSpeed = 0.5f;
 	for (size_t i = 0; i < MAX_CHARACTERS; i++)
 	{
@@ -342,38 +307,6 @@ void CGame::Update(float dt)
 		pCharacter->m_vecVelocity = (m_hPlayer->GetGlobalOrigin() - pCharacter->GetGlobalOrigin()).Normalized() * flMonsterSpeed;
 
 		pCharacter->SetTranslation(pCharacter->GetGlobalOrigin() + pCharacter->m_vecVelocity * dt);
-	}
-
-	if (Game()->GetTime() >= m_projectile_initial_time + 8)
-	{
-		m_projectile_position[0] = m_projectile_initial_position;
-		m_projectile_velocity[0] = m_projectile_initial_velocity = Vector((float)(rand()%1000)/250-2, 2.5, (float)(rand()%1000)/250-2) * 5;
-		m_projectile_initial_time = Game()->GetTime();
-		m_projectile_break_time = Game()->GetTime() + PredictProjectileMaximumHeightTime(m_projectile_initial_velocity, m_projectile_gravity);
-		m_projectile_number = 1;
-	}
-
-	if (Game()->GetTime() >= m_projectile_break_time && m_projectile_number == 1)
-	{
-		for (int i = 1; i < MAX_PROJECTILES; i++)
-		{
-			m_projectile_position[i] = m_projectile_position[0];
-			m_projectile_velocity[i] = m_projectile_velocity[0] + Vector((float)(rand()%1000)/250-2, (float)(rand()%1000)/250-2, (float)(rand()%1000)/250-2);
-		}
-		m_projectile_number = MAX_PROJECTILES;
-	}
-
-	// Simulate the projectile
-	for (int i = 0; i < m_projectile_number; i++)
-	{
-		m_projectile_position[i] = m_projectile_position[i] + m_projectile_velocity[i] * dt;
-		m_projectile_velocity[i] = m_projectile_velocity[i] + m_projectile_gravity * dt;
-
-		if (m_projectile_position[i].y < 0)
-		{
-			MakePuff(m_projectile_position[i]);
-			m_projectile_position[i].y = 9999999; // Move it way up high and out of sight until it gets reset. Sort of a hack, no big deal.
-		}
 	}
 }
 
@@ -536,8 +469,6 @@ void CGame::Draw()
 			r.RenderBox(vecOrigin - Vector(1, 1, 1)*flSize, vecOrigin + Vector(1, 1, 1)*flSize);
 		}
 	}
-
-	GraphDraw();
 
 	pRenderer->FinishRendering(&r);
 
@@ -703,8 +634,8 @@ void CGame::GameLoop()
 	Vector vecMonsterMin = Vector(-1, 0, -1);
 	Vector vecMonsterMax = Vector(1, 2, 1);
 
-	/*CCharacter* pTarget1 = CreateCharacter();
-	pTarget1->SetTransform(Vector(2, 2, 2), 0, Vector(0, 1, 0), Vector(6, 0, 6));
+	CCharacter* pTarget1 = CreateCharacter();
+	pTarget1->SetTransform(Vector(1, 1, 1), 0, Vector(0, 1, 0), Vector(6, 0, 6));
 	pTarget1->m_aabbSize.vecMin = vecMonsterMin;
 	pTarget1->m_aabbSize.vecMax = vecMonsterMax;
 	pTarget1->m_iBillboardTexture = m_iMonsterTexture;
@@ -712,7 +643,7 @@ void CGame::GameLoop()
 	pTarget1->m_bTakesDamage = true;
 
 	CCharacter* pTarget2 = CreateCharacter();
-	pTarget2->SetTransform(Vector(2, 2, 2), 0, Vector(0, 1, 0), Vector(6, 0, -6));
+	pTarget2->SetTransform(Vector(1, 1, 1), 0, Vector(0, 1, 0), Vector(6, 0, -6));
 	pTarget2->m_aabbSize.vecMin = vecMonsterMin;
 	pTarget2->m_aabbSize.vecMax = vecMonsterMax;
 	pTarget2->m_iBillboardTexture = m_iMonsterTexture;
@@ -720,19 +651,17 @@ void CGame::GameLoop()
 	pTarget2->m_bTakesDamage = true;
 
 	CCharacter* pTarget3 = CreateCharacter();
-	pTarget3->SetTransform(Vector(3, 3, 3), 0, Vector(0, 1, 0), Vector(-6, 0, 8));
+	pTarget3->SetTransform(Vector(1, 1, 1), 0, Vector(0, 1, 0), Vector(-6, 0, 8));
 	pTarget3->m_aabbSize.vecMin = vecMonsterMin;
 	pTarget3->m_aabbSize.vecMax = vecMonsterMax;
 	pTarget3->m_iBillboardTexture = m_iMonsterTexture;
 	pTarget3->m_bEnemyAI = true;
-	pTarget3->m_bTakesDamage = true;*/
+	pTarget3->m_bTakesDamage = true;
 
-	Vector vecPropMin = Vector(-.1f, 0, -.1f);
-	Vector vecPropMax = Vector(.1f, .2f, .1f);
+	Vector vecPropMin = Vector(-1, 0, -1);
+	Vector vecPropMax = Vector(1, 2, 1);
 
-	mtsrand(0);
-
-	for (int i = 0; i < 800; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		float rand1 = (float)(mtrand()%1000)/1000; // [0, 1]
 		float rand2 = (float)(mtrand()%1000)/1000; // [0, 1]
@@ -831,274 +760,4 @@ void CGame::RemoveCharacter(CCharacter* pCharacter)
 CCharacter* CGame::GetCharacterIndex(size_t i)
 {
 	return m_apEntityList[i];
-}
-
-void CGame::GraphReset()
-{
-	m_eGraphStep = GRAPHSTEP_BEGIN;
-	m_aiUnvisitedNodes.clear();
-	m_aiPathStack.clear();
-	m_iCurrentNode = -1;
-
-	m_Graph = CGraph();
-}
-
-bool smaller_weight(const node_t& l, const node_t& r)
-{
-	auto& graph = Game()->m_Graph;
-	return graph.GetNode(l)->path_weight > graph.GetNode(r)->path_weight;
-}
-
-void CGame::GraphStep()
-{
-	if (m_eGraphStep == GRAPHSTEP_BEGIN)
-	{
-		m_iCurrentNode = 0;
-		m_Graph.GetNode(m_iCurrentNode)->seen = true;
-		m_Graph.GetNode(m_iCurrentNode)->path_weight = 0;
-
-		for (int i = 1; i < m_Graph.GetNumNodes(); i++)
-			m_aiUnvisitedNodes.push_back(i);
-
-		m_eGraphStep = GRAPHSTEP_CALCULATENEIGHBORS;
-	}
-	else if (m_eGraphStep == GRAPHSTEP_CALCULATENEIGHBORS)
-	{
-		CGraph::CNode* current_node = m_Graph.GetNode(m_iCurrentNode);
-
-		size_t i;
-		for (i = 0; i < current_node->edges.size(); i++)
-		{
-			edge_t edge = current_node->edges[i];
-
-			node_t test_node = m_Graph.FollowEdge(m_iCurrentNode, edge);
-
-			if (m_Graph.GetNode(test_node)->seen)
-				continue;
-
-			float g_weight = m_Graph.GetEdge(edge)->weight + current_node->path_weight;
-			float h_weight = (m_Graph.GetNode(test_node)->debug_position - m_pTargetNode->debug_position).Length();
-
-			float f_weight = g_weight + h_weight;
-
-			if (f_weight < m_Graph.GetNode(test_node)->path_weight)
-			{
-				m_Graph.GetNode(test_node)->path_weight = f_weight;
-				m_Graph.GetNode(test_node)->path_from = m_iCurrentNode;
-			}
-		}
-
-		// We made changes to our node weights. Make sure it's still a heap by remaking the heap.
-		std::make_heap(m_aiUnvisitedNodes.begin(), m_aiUnvisitedNodes.end(), smaller_weight);
-
-		m_eGraphStep = GRAPHSTEP_FINDLOWEST;
-	}
-	else if (m_eGraphStep == GRAPHSTEP_FINDLOWEST)
-	{
-		if (!m_aiUnvisitedNodes.size())
-			return;
-
-		std::pop_heap(m_aiUnvisitedNodes.begin(), m_aiUnvisitedNodes.end(), smaller_weight);
-
-		node_t lowest_path_node = m_aiUnvisitedNodes.back();
-		float lowest_path_weight = m_Graph.GetNode(lowest_path_node)->path_weight;
-
-		m_aiUnvisitedNodes.pop_back();
-
-		if (lowest_path_node < 0)
-			return;
-
-		m_iCurrentNode = lowest_path_node;
-		m_Graph.GetNode(m_iCurrentNode)->seen = true;
-
-		if (m_Graph.GetNode(lowest_path_node) == m_pTargetNode)
-		{
-			m_eGraphStep = GRAPHSTEP_RECONSTRUCT;
-			return;
-		}
-
-		m_eGraphStep = GRAPHSTEP_CALCULATENEIGHBORS;
-	}
-	else if (m_eGraphStep == GRAPHSTEP_RECONSTRUCT)
-	{
-		node_t current_node = m_iCurrentNode;
-
-		m_aiPathStack.push_back(current_node);
-
-		while (m_Graph.GetNode(current_node)->path_from != ~0)
-		{
-			current_node = m_Graph.GetNode(current_node)->path_from;
-			m_aiPathStack.push_back(current_node);
-		}
-	}
-}
-
-void CGame::GraphComplete()
-{
-	GraphReset();
-
-	node_t current_node_index = 0;
-	m_Graph.GetNode(current_node_index)->seen = true;
-	m_Graph.GetNode(current_node_index)->path_weight = 0;
-
-	for (int i = 1; i < m_Graph.GetNumNodes(); i++)
-		m_aiUnvisitedNodes.push_back(i);
-
-	while (m_aiUnvisitedNodes.size())
-	{
-		CGraph::CNode* current_node = m_Graph.GetNode(current_node_index);
-
-		size_t i;
-		for (i = 0; i < current_node->edges.size(); i++)
-		{
-			edge_t edge = current_node->edges[i];
-
-			node_t test_node = m_Graph.FollowEdge(current_node_index, edge);
-
-			if (m_Graph.GetNode(test_node)->seen)
-				continue;
-
-			float g_weight = m_Graph.GetEdge(edge)->weight + current_node->path_weight;
-			float h_weight = (m_Graph.GetNode(test_node)->debug_position - m_pTargetNode->debug_position).Length();
-
-			float f_weight = g_weight + h_weight;
-
-			if (f_weight < m_Graph.GetNode(test_node)->path_weight)
-			{
-				m_Graph.GetNode(test_node)->path_weight = f_weight;
-				m_Graph.GetNode(test_node)->path_from = current_node_index;
-			}
-		}
-
-		// We made changes to our node weights. Make sure it's still a heap by remaking the heap.
-		std::make_heap(m_aiUnvisitedNodes.begin(), m_aiUnvisitedNodes.end(), smaller_weight);
-
-		// Pop the smallest item off the heap.
-		std::pop_heap(m_aiUnvisitedNodes.begin(), m_aiUnvisitedNodes.end(), smaller_weight);
-
-		node_t lowest_path_node = m_aiUnvisitedNodes.back();
-		float lowest_path_weight = m_Graph.GetNode(lowest_path_node)->path_weight;
-
-		m_aiUnvisitedNodes.pop_back();
-
-		if (lowest_path_node < 0)
-			return;
-
-		current_node_index = lowest_path_node;
-		m_Graph.GetNode(current_node_index)->seen = true;
-
-		if (m_Graph.GetNode(lowest_path_node) == m_pTargetNode)
-		{
-			m_aiPathStack.push_back(current_node_index);
-
-			while (m_Graph.GetNode(current_node_index)->path_from != ~0)
-			{
-				current_node_index = m_Graph.GetNode(current_node_index)->path_from;
-				m_aiPathStack.push_back(current_node_index);
-			}
-
-			return;
-		}
-	}
-}
-
-void CGame::GraphDraw()
-{
-	CRenderingContext c(GetRenderer(), true);
-
-	for (int i = 0; i < m_Graph.GetNumNodes(); i++)
-	{
-		CGraph::CNode* node = m_Graph.GetNode(i);
-
-		{
-			if (m_iCurrentNode == i)
-				c.SetUniform("vecColor", Color(0, 255, 0, 255));
-			else if (node == m_pTargetNode)
-				c.SetUniform("vecColor", Color(255, 120, 0, 255));
-			else if (node->path_weight < FLT_MAX)
-			{
-				int r = (int)Remap(node->path_weight, 0, 10, 50, 255);
-				c.SetUniform("vecColor", Color(r, 50, 50, 255));
-			}
-			else
-			{
-				c.SetUniform("vecColor", Color(255, 255, 255, 255));
-
-				for (size_t j = 0; j < m_aiUnvisitedNodes.size(); j++)
-				{
-					if (m_aiUnvisitedNodes[j] == i)
-					{
-						c.SetUniform("vecColor", Color(0, 0, 255, 255));
-						break;
-					}
-				}
-			}
-		}
-
-		c.RenderBox(node->debug_position - Vector(1, 1, 1), node->debug_position + Vector(1, 1, 1));
-
-		if (node->seen)
-		{
-			c.SetUniform("vecColor", Color(0, 0, 0, 255));
-			c.RenderBox(node->debug_position + Vector(1, 1, -1) - Vector(0.2f, 0.2f, 0.2f), node->debug_position + Vector(1, 1, -1) + Vector(0.2f, 0.2f, 0.2f));
-		}
-	}
-
-	c.SetUniform("bLighted", false);
-
-	for (int i = 0; i < m_Graph.GetNumEdges(); i++)
-	{
-		CGraph::CEdge* edge = m_Graph.GetEdge(i);
-		CGraph::CNode* node1 = m_Graph.GetNode(edge->first);
-		CGraph::CNode* node2 = m_Graph.GetNode(edge->second);
-
-		bool in_path = false;
-		for (int j = 0; j < ((int)m_aiPathStack.size())-1; j++)
-		{
-			if (m_aiPathStack[j] == edge->first && m_aiPathStack[j+1] == edge->second)
-			{
-				in_path = true;
-				break;
-			}
-
-			if (m_aiPathStack[j] == edge->second && m_aiPathStack[j+1] == edge->first)
-			{
-				in_path = true;
-				break;
-			}
-		}
-
-		if (in_path)
-			c.SetUniform("vecColor", Color(0, 0, 255, 255));
-		else
-			c.SetUniform("vecColor", Color((int)Remap(edge->weight, 1, 8, 0, 255), 0, 0, 255));
-
-		c.BeginRenderLines();
-			c.Vertex(node1->debug_position + Vector(0, 0.1f, 0));
-			c.Vertex(node2->debug_position + Vector(0, 0.1f, 0));
-		c.EndRender();
-
-		Vector path_start, path_end;
-		bool show_path = false;
-
-		if (node1->path_from == edge->second)
-		{
-			path_start = node1->debug_position;
-			path_end = node2->debug_position;
-			show_path = true;
-		}
-		else if (node2->path_from == edge->first)
-		{
-			path_start = node2->debug_position;
-			path_end = node1->debug_position;
-			show_path = true;
-		}
-
-		if (show_path)
-		{
-			float lerp = fmod(GetTime(), 1);
-			Vector position = path_start * (1-lerp) + path_end * lerp;
-			c.RenderBox(position - Vector(0.2f, 0.2f, 0.2f), position + Vector(0.2f, 0.2f, 0.2f));
-		}
-	}
 }

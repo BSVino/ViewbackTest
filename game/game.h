@@ -89,11 +89,6 @@ public:
 
 	size_t      GetMonsterTexture() { return m_iMonsterTexture; }
 
-	void GraphStep();
-	void GraphComplete();
-	void GraphReset();
-	void GraphDraw();
-
 private:
 	int m_iLastMouseX;
 	int m_iLastMouseY;
@@ -105,7 +100,6 @@ private:
 
 	size_t m_iMonsterTexture;
 	size_t m_iCrateTexture;
-	size_t m_iNormalTexture;
 
 	CCharacter*              m_apEntityList[MAX_CHARACTERS];
 	std::vector<CCharacter*> m_apRenderOpaqueList;
@@ -116,34 +110,6 @@ private:
 
 	size_t m_iMeshVB;
 	size_t m_iMeshSize;
-
-#define MAX_PROJECTILES 8
-	float m_projectile_initial_time;
-	float m_projectile_break_time;
-	int m_projectile_number;
-	Vector m_projectile_position[MAX_PROJECTILES];
-	Vector m_projectile_velocity[MAX_PROJECTILES];
-	Vector m_projectile_gravity;
-
-	Vector m_projectile_initial_position;
-	Vector m_projectile_initial_velocity;
-
-public:
-	typedef enum
-	{
-		GRAPHSTEP_BEGIN,
-		GRAPHSTEP_FINDLOWEST,
-		GRAPHSTEP_CALCULATENEIGHBORS,
-		GRAPHSTEP_RECONSTRUCT,
-	} graph_step_t;
-
-	graph_step_t m_eGraphStep;
-	node_t m_iCurrentNode;
-	std::vector<node_t> m_aiUnvisitedNodes;
-	std::vector<node_t> m_aiPathStack;
-
-	CGraph m_Graph;
-	CGraph::CNode* m_pTargetNode;
 };
 
 inline CGame* Game()

@@ -33,7 +33,6 @@ CCharacter::CCharacter()
 	m_bTakesDamage = false;
 	m_bDrawTransparent = false;
 	m_iHealth = 3;
-	m_flDistanceTraveled = 0;
 }
 
 void CCharacter::SetTransform(const Vector& vecScaling, float flTheta, const Vector& vecRotationAxis, const Vector& vecTranslation)
