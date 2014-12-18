@@ -70,6 +70,9 @@ void test_callback(class CCommand* pCommand, std::vector<std::string>& asTokens,
 
 CCommand test("test", test_callback);
 
+float g_player_speed = 15;
+int g_monsters = 3;
+
 void CGame::Load()
 {
 	m_iMonsterTexture = GetRenderer()->LoadTextureIntoGL("monster.png");
@@ -78,43 +81,38 @@ void CGame::Load()
 	vb_util_add_channel("Player speed", VB_DATATYPE_FLOAT, NULL);
 	vb_util_set_range_s("Player speed", 0, 400);
 
-	vb_util_add_control_slider_float_command("Player speed", 0, 20, 0, "player_speed");
-	vb_util_set_control_slider_float_value("Player speed", CVar::GetCVarFloat("player_speed"));
+	vb_util_add_control_slider_float_address("Player speed", 0, 20, 0, &g_player_speed);
 
 	vb_util_set_command_callback(vb_command);
 
 	vb_util_add_control_button_command("Test", "test");
 
-	vb_util_add_control_slider_int_command("Number of monsters", 0, 10, 1, "monsters");
-	vb_util_set_control_slider_int_value("Number of monsters", CVar::GetCVarFloat("monsters"));
+	vb_util_add_control_slider_int_address("Number of monsters", 0, 10, 1, &g_monsters);
 
 	vb_util_server_create("Roguelike Test");
 }
-
-CVar player_speed("player_speed", "15");
-CVar monsters("monsters", "3");
 
 // This method gets called when the user presses a key
 bool CGame::KeyPress(int c)
 {
 	if (c == 'W')
 	{
-		m_hPlayer->m_vecMovementGoal.x = player_speed.GetFloat();
+		m_hPlayer->m_vecMovementGoal.x = g_player_speed;
 		return true;
 	}
 	else if (c == 'A')
 	{
-		m_hPlayer->m_vecMovementGoal.z = player_speed.GetFloat();
+		m_hPlayer->m_vecMovementGoal.z = g_player_speed;
 		return true;
 	}
 	else if (c == 'S')
 	{
-		m_hPlayer->m_vecMovementGoal.x = -player_speed.GetFloat();
+		m_hPlayer->m_vecMovementGoal.x = -g_player_speed;
 		return true;
 	}
 	else if (c == 'D')
 	{
-		m_hPlayer->m_vecMovementGoal.z = -player_speed.GetFloat();
+		m_hPlayer->m_vecMovementGoal.z = -g_player_speed;
 		return true;
 	}
 	else if (c == ' ')
@@ -234,13 +232,13 @@ void CGame::Update(float dt)
 		pCharacter->SetTranslation(pCharacter->GetGlobalOrigin() + pCharacter->m_vecVelocity * dt);
 	}
 
-	while ((int)monsters.size() > ::monsters.GetInt())
+	while ((int)monsters.size() > g_monsters)
 	{
 		RemoveCharacter(monsters.back());
 		monsters.pop_back();
 	}
 
-	while ((int)monsters.size() < ::monsters.GetInt())
+	while ((int)monsters.size() < g_monsters)
 	{
 		// Spawn another baddy to take this guy's place.
 		CCharacter* pNew = Game()->CreateCharacter();
