@@ -63,6 +63,13 @@ void vb_player_speed(float value)
 	CVar::SetCVar("player_speed", value);
 }
 
+void test_callback(class CCommand* pCommand, std::vector<std::string>& asTokens, const std::string& sCommand)
+{
+	vb_console_append("Test!\n");
+}
+
+CCommand test("test", test_callback);
+
 void CGame::Load()
 {
 	m_iMonsterTexture = GetRenderer()->LoadTextureIntoGL("monster.png");
@@ -71,15 +78,21 @@ void CGame::Load()
 	vb_util_add_channel("Player speed", VB_DATATYPE_FLOAT, NULL);
 	vb_util_set_range_s("Player speed", 0, 400);
 
-	vb_util_add_control_slider_float("Player speed", 0, 20, 0, vb_player_speed);
+	vb_util_add_control_slider_float_command("Player speed", 0, 20, 0, "player_speed");
 	vb_util_set_control_slider_float_value("Player speed", CVar::GetCVarFloat("player_speed"));
 
 	vb_util_set_command_callback(vb_command);
+
+	vb_util_add_control_button_command("Test", "test");
+
+	vb_util_add_control_slider_int_command("Number of monsters", 0, 10, 1, "monsters");
+	vb_util_set_control_slider_int_value("Number of monsters", CVar::GetCVarFloat("monsters"));
 
 	vb_util_server_create("Roguelike Test");
 }
 
 CVar player_speed("player_speed", "15");
+CVar monsters("monsters", "3");
 
 // This method gets called when the user presses a key
 bool CGame::KeyPress(int c)
@@ -198,6 +211,8 @@ void CGame::Update(float dt)
 	vb_data_send_float_s("Player speed", m_hPlayer->m_vecVelocity.Length2D());
 	//vb_data_set_control_slider_float_value("Player speed", player_speed.GetFloat());
 
+	std::vector<CCharacter*> monsters;
+
 	float flMonsterSpeed = 0.5f;
 	for (size_t i = 0; i < MAX_CHARACTERS; i++)
 	{
@@ -208,6 +223,8 @@ void CGame::Update(float dt)
 		if (!pCharacter->m_bEnemyAI)
 			continue;
 
+		monsters.push_back(pCharacter);
+
 		// Update position and movement. http://www.youtube.com/watch?v=c4b9lCfSDQM
 		if ((m_hPlayer->GetGlobalOrigin() - pCharacter->GetGlobalOrigin()).Length() < 1)
 			continue;
@@ -215,6 +232,29 @@ void CGame::Update(float dt)
 		pCharacter->m_vecVelocity = (m_hPlayer->GetGlobalOrigin() - pCharacter->GetGlobalOrigin()).Normalized() * flMonsterSpeed;
 
 		pCharacter->SetTranslation(pCharacter->GetGlobalOrigin() + pCharacter->m_vecVelocity * dt);
+	}
+
+	while ((int)monsters.size() > ::monsters.GetInt())
+	{
+		RemoveCharacter(monsters.back());
+		monsters.pop_back();
+	}
+
+	while ((int)monsters.size() < ::monsters.GetInt())
+	{
+		// Spawn another baddy to take this guy's place.
+		CCharacter* pNew = Game()->CreateCharacter();
+
+		// Position the new monster in a random spot near the player.
+		pNew->SetTransform(Vector(1, 1, 1), 0, Vector(0, 1, 0), Vector((float)(rand() % 20) - 10, 0, (float)(rand() % 20) - 10));
+
+		pNew->m_aabbSize.vecMin = Vector(-1, 0, -1);
+		pNew->m_aabbSize.vecMax = Vector(1, 2, 1);
+		pNew->m_iBillboardTexture = Game()->GetMonsterTexture();
+		pNew->m_bEnemyAI = true;
+		pNew->m_bTakesDamage = true;
+
+		monsters.push_back(pNew);
 	}
 }
 
